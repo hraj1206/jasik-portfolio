@@ -4,7 +4,8 @@ import { useState } from 'react'
  * Recipient email for Jasik Preet Kaur.
  * You or Jasik can update this address anytime:
  */
-export const JASIK_EMAIL = 'hraj48147@gmail.com'
+export const JASIK_EMAIL = 'jasikpreetkaur@gmail.com'
+
 
 const LockIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
