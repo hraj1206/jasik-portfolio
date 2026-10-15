@@ -1,0 +1,658 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Jasik Preet Kaur Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Concept: a living light-field (shader aurora) with a cut-out portrait standing inside the giant type.
+   Interactive 3D: a draggable skill galaxy and a bar-field "growth curve" that rises as you scroll. */
+:root {
+  --bg: #eef2ff;
+  --ink: #0a0f2c;
+  --ink2: #444e7a;
+  --cobalt: #2540ff;
+  --aqua: #22d1ee;
+  --coral: #ff5a4d;
+  --blush: #ffd9d2;
+  --glass: rgba(255, 255, 255, 0.64);
+  --glass-solid: #ffffff;
+  --line: rgba(10, 15, 44, 0.12);
+  --f-display: "Unbounded", "Trebuchet MS", system-ui, sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 17px; line-height: 1.6;
+  padding-block: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  overflow-x: hidden;
+}
+#bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+#root { position: relative; z-index: 1; }
+.wrap { max-width: 1160px; margin: 0 auto; overflow-x: clip; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 3px; border-radius: 6px; }
+::selection { background: var(--cobalt); color: #fff; }
+
+.bar { position: fixed; top: 0; left: 0; height: 4px; width: var(--sp, 0%); z-index: 60; background: linear-gradient(90deg, var(--aqua), var(--cobalt), var(--coral)); }
+.cursor { position: fixed; left: -18px; top: -18px; width: 36px; height: 36px; border: 1.5px solid var(--cobalt); border-radius: 50%; pointer-events: none; z-index: 70; transition: background 0.2s, border-color 0.2s; }
+.cursor.big { background: rgba(37, 64, 255, 0.14); border-color: var(--coral); }
+
+/* nav */
+nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 10px); z-index: 40; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px; padding: 8px 10px 8px 18px; border-radius: 999px; background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.brand { font-family: var(--f-display); font-weight: 800; text-decoration: none; letter-spacing: -0.02em; font-size: 1rem; }
+.brand i { font-style: normal; color: var(--coral); }
+.links { display: flex; gap: 2px; }
+.links a { text-decoration: none; font-weight: 600; font-size: 0.85rem; padding: 7px 12px; border-radius: 999px; color: var(--ink2); }
+.links a:hover { background: rgba(37, 64, 255, 0.1); color: var(--cobalt); }
+.links a.go { background: var(--ink); color: #fff; }
+.links a.go:hover { background: var(--cobalt); color: #fff; }
+
+/* hero */
+.stage { position: relative; min-height: clamp(560px, 62vw, 740px); padding-top: 28px; --px: 0; --py: 0; }
+.names { position: relative; z-index: 1; margin: 0; font-family: var(--f-display); font-weight: 800; font-size: clamp(3.1rem, 14vw, 10.5rem); line-height: 0.86; letter-spacing: -0.045em; text-transform: uppercase; transform: translate(calc(var(--px) * -16px), calc(var(--py) * -8px)); transition: transform 0.25s ease-out; }
+.names span { display: block; animation: rise 0.9s cubic-bezier(.2,.8,.2,1) both; }
+.names .l2 { color: transparent; -webkit-text-stroke: 2px var(--ink); animation-delay: 0.1s; }
+.names .l3 { background: linear-gradient(95deg, var(--cobalt), var(--aqua) 60%, var(--coral)); -webkit-background-clip: text; background-clip: text; color: transparent; animation-delay: 0.2s; width: max-content; max-width: 100%; }
+.pwrap { position: absolute; right: 1%; bottom: 0; width: clamp(290px, 38vw, 450px); z-index: 2; transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 0.2s ease-out; }
+.disc { position: absolute; left: 6%; right: 6%; top: 10%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0%, var(--blush) 40%, #ff8f7f 100%); box-shadow: 0 30px 80px rgba(255, 90, 77, 0.28); }
+.ring { position: absolute; left: -2%; right: -2%; top: 4%; aspect-ratio: 1; border-radius: 50%; border: 1.5px dashed var(--cobalt); opacity: 0.55; animation: spin 50s linear infinite; }
+.ring::after { content: ""; position: absolute; top: 8%; left: 14%; width: 14px; height: 14px; border-radius: 50%; background: var(--cobalt); }
+.portrait { position: relative; display: block; width: 100%; height: auto; -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%); mask-image: linear-gradient(to bottom, #000 80%, transparent 100%); filter: drop-shadow(0 24px 30px rgba(10, 15, 44, 0.22)); animation: rise 1s 0.15s cubic-bezier(.2,.8,.2,1) both; }
+.chip { position: absolute; z-index: 3; padding: 8px 14px; border-radius: 999px; background: var(--glass-solid); border: 1px solid var(--line); font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.04em; box-shadow: 0 10px 30px rgba(10, 15, 44, 0.12); white-space: nowrap; animation: bob 6s ease-in-out infinite; transform: translate(calc(var(--px) * 22px), calc(var(--py) * 14px)); }
+.chip b { color: var(--coral); font-weight: 500; }
+.c1 { top: 12%; left: -14%; }
+.c2 { top: 50%; right: -8%; animation-delay: -2s; }
+.c3 { bottom: 14%; left: -12%; animation-delay: -4s; }
+.meta { position: absolute; z-index: 3; left: 0; bottom: 6px; max-width: 360px; }
+.kick { display: inline-flex; align-items: center; gap: 10px; font-family: var(--f-mono); font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cobalt); margin: 0 0 14px; }
+.kick::before { content: ""; width: 28px; height: 2px; background: currentColor; }
+.lede { margin: 0 0 22px; font-size: 1.12rem; color: var(--ink2); }
+.lede strong { color: var(--ink); }
+.btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font: 700 0.92rem var(--f-body); padding: 13px 22px; border-radius: 999px; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); text-decoration: none; cursor: pointer; transition: transform 0.2s, background 0.2s, color 0.2s; }
+.btn:hover { transform: translateY(-2px); }
+.btn.solid { background: var(--ink); color: #fff; }
+.btn.solid:hover { background: var(--cobalt); border-color: var(--cobalt); }
+.btn:disabled { opacity: 0.55; cursor: progress; transform: none; }
+
+@keyframes rise { from { transform: translateY(26px); } to { transform: none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes bob { 0%, 100% { margin-top: 0; } 50% { margin-top: -10px; } }
+@keyframes slide { to { transform: translateX(-50%); } }
+
+/* marquee */
+.marq { margin: 36px -9999px 0; padding: 0 9999px; background: var(--ink); color: #fff; overflow: hidden; transform: rotate(-1.2deg); }
+.marq div { display: flex; width: max-content; animation: slide 32s linear infinite; padding: 16px 0; }
+.marq span { font-family: var(--f-display); font-weight: 700; font-size: clamp(1rem, 2.4vw, 1.5rem); white-space: nowrap; padding-right: 36px; }
+.marq span::after { content: "✦"; color: var(--aqua); padding-left: 36px; }
+
+section { padding: 96px 0 40px; scroll-margin-top: 70px; }
+h2 { font-family: var(--f-display); font-weight: 700; font-size: clamp(1.8rem, 4.8vw, 3.4rem); line-height: 1.05; letter-spacing: -0.035em; margin: 0 0 28px; text-wrap: balance; }
+h2 em { font-style: normal; color: var(--cobalt); }
+.glass { background: var(--glass); border: 1px solid var(--line); border-radius: 28px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+
+/* about */
+.about { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 40px; align-items: start; }
+.reveal { margin: 0 0 28px; font-family: var(--f-display); font-weight: 500; font-size: clamp(1.25rem, 2.6vw, 2rem); line-height: 1.35; letter-spacing: -0.02em; }
+.reveal span { color: rgba(10, 15, 44, 0.28); transition: color 0.35s; }
+.reveal span.on { color: var(--ink); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+.fact { padding: 18px 20px; }
+.fact small { display: block; font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink2); }
+.fact b { font-weight: 700; font-size: 1rem; }
+
+/* galaxy */
+.gal { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 24px; align-items: stretch; }
+.gcan { position: relative; min-height: 420px; aspect-ratio: 1 / 0.92; overflow: hidden; }
+.gcan canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.gcan canvas:active { cursor: grabbing; }
+.hint { position: absolute; left: 20px; bottom: 14px; font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink2); pointer-events: none; }
+.detail { padding: 32px; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; min-width: 0; }
+.detail .tag { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cobalt); }
+.detail h3 { font-family: var(--f-display); font-size: clamp(1.4rem, 3vw, 2.1rem); letter-spacing: -0.03em; line-height: 1.1; margin: 10px 0 14px; }
+.detail p { margin: 0; color: var(--ink2); }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pills button { font: 600 0.8rem var(--f-body); padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+.pills button:hover { border-color: var(--cobalt); }
+.pills button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* growth */
+.growth { position: relative; height: clamp(360px, 62vw, 620px); overflow: hidden; border-radius: 32px; background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.25)); border: 1px solid var(--line); }
+.growth canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.glab { position: absolute; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); background: #fff; border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; bottom: 18px; }
+.gl1 { left: 18px; } .gl2 { right: 18px; }
+.gcap { position: absolute; top: 20px; left: 22px; max-width: 280px; font-weight: 600; color: var(--ink); text-shadow: 0 0 12px rgba(255,255,255,0.9); }
+
+/* path */
+.path { position: relative; padding-left: 64px; display: grid; gap: 22px; }
+.path::before { content: ""; position: absolute; left: 20px; top: 8px; bottom: 8px; width: 3px; background: var(--line); border-radius: 3px; }
+.path::after { content: ""; position: absolute; left: 20px; top: 8px; width: 3px; height: calc((100% - 16px) * var(--jp, 0)); background: linear-gradient(var(--aqua), var(--cobalt), var(--coral)); border-radius: 3px; }
+.stop { position: relative; padding: 26px 28px; }
+.stop::before { content: ""; position: absolute; left: -53px; top: 30px; width: 17px; height: 17px; border-radius: 50%; background: var(--bg); border: 3px solid var(--cobalt); }
+.stop.now::before { background: var(--coral); border-color: var(--coral); box-shadow: 0 0 0 8px rgba(255, 90, 77, 0.2); }
+.stop small { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--coral); }
+.stop h3 { font-family: var(--f-display); font-size: clamp(1.15rem, 2.4vw, 1.6rem); letter-spacing: -0.03em; margin: 6px 0 8px; line-height: 1.15; }
+.stop p { margin: 0; color: var(--ink2); max-width: 60ch; }
+
+/* contact */
+.hello { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 36px; padding: 40px; }
+.hello p { color: var(--ink2); margin: 0 0 18px; max-width: 42ch; }
+.lock { display: inline-flex; align-items: center; gap: 10px; font-family: var(--f-mono); font-size: 0.74rem; letter-spacing: 0.06em; padding: 9px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--line); }
+.lock svg { width: 16px; height: 16px; }
+form { display: grid; gap: 14px; min-width: 0; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+label { display: grid; gap: 6px; font-weight: 700; font-size: 0.82rem; }
+input, textarea { font: 500 16px var(--f-body); color: var(--ink); background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 13px 15px; width: 100%; min-width: 0; }
+textarea { min-height: 120px; resize: vertical; }
+input:focus, textarea:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 4px rgba(37, 64, 255, 0.15); }
+.note { font-size: 0.9rem; padding: 14px 16px; border-radius: 14px; background: #fff; border: 1px solid var(--line); }
+.note.ok { border-color: #1fa97a; }
+.note.bad { border-color: var(--coral); }
+.inbox { margin-top: 24px; padding: 28px; display: grid; gap: 12px; }
+.inbox h3 { margin: 0; font-family: var(--f-display); font-size: 1.2rem; letter-spacing: -0.02em; }
+.msg { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; overflow-wrap: anywhere; }
+.msg small { display: block; color: var(--ink2); font-family: var(--f-mono); font-size: 0.72rem; }
+
+footer { margin-top: 70px; padding: 30px 0 60px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; font-size: 0.85rem; color: var(--ink2); border-top: 1px solid var(--line); }
+
+@media (max-width: 860px) {
+  body { font-size: 16px; }
+  .stage { min-height: 0; padding-bottom: 0; }
+  .names { font-size: clamp(3rem, 17vw, 6rem); }
+  .names .l2 { -webkit-text-stroke-width: 1.5px; }
+  .pwrap { position: relative; right: auto; bottom: auto; width: min(78%, 360px); margin: -12vw 0 0 auto; }
+  .c1 { left: -22%; } .c3 { left: -26%; } .c2 { right: -6%; }
+  .meta { position: static; max-width: none; margin-top: 24px; }
+  .about, .gal, .hello { grid-template-columns: minmax(0, 1fr); }
+  .hello { padding: 24px; }
+  .two { grid-template-columns: minmax(0, 1fr); }
+  .links a { padding: 7px 9px; font-size: 0.78rem; }
+  .links a.opt { display: none; }
+  section { padding-top: 70px; }
+  .path { padding-left: 48px; }
+  .stop::before { left: -40px; }
+  .path::before, .path::after { left: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .names span, .portrait, .ring, .chip, .marq div { animation: none; }
+}
+</style>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+/* Light-field background (raw WebGL fragment shader) */
+(function () {
+  var cv = document.getElementById('bg');
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var gl = cv.getContext('webgl', { antialias: false, alpha: false });
+  if (!gl) return;
+  var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  var fs = [
+    'precision highp float;uniform vec2 r;uniform float t;uniform vec2 m;',
+    'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+    'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
+    'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*n(p);p*=2.02;a*=.5;}return v;}',
+    'void main(){',
+    ' vec2 uv=gl_FragCoord.xy/r; float asp=r.x/r.y; vec2 p=uv*vec2(asp,1.)*1.7; vec2 mm=m*vec2(asp,1.)*1.7;',
+    ' float d=distance(p,mm); p+=(p-mm)*0.14*exp(-d*2.2);',
+    ' float a=fbm(p+vec2(t*.05,t*.03)); float b=fbm(p*1.3-vec2(t*.04,-t*.05)+a*1.6); float c=fbm(p*.8+5.-t*.03+b);',
+    ' vec3 ice=vec3(.93,.95,1.),cob=vec3(.15,.25,1.),aq=vec3(.13,.82,.93),co=vec3(1.,.35,.30);',
+    ' vec3 col=ice;',
+    ' col=mix(col,aq,smoothstep(.35,.8,b)*.6);',
+    ' col=mix(col,cob,smoothstep(.5,.95,a)*.5);',
+    ' col=mix(col,co,smoothstep(.55,.9,c)*.45);',
+    ' col=mix(ice,col,.72);',
+    ' col+=vec3(1.,.92,.88)*exp(-d*3.)*.14;',
+    ' col+=(h(gl_FragCoord.xy+fract(t))-.5)*.035;',
+    ' gl_FragColor=vec4(col,1.);',
+    '}'
+  ].join('\n');
+  function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; }
+  var v = sh(gl.VERTEX_SHADER, vs), f = sh(gl.FRAGMENT_SHADER, fs);
+  if (!v || !f) return;
+  var pr = gl.createProgram(); gl.attachShader(pr, v); gl.attachShader(pr, f); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
+  gl.useProgram(pr);
+  var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var uR = gl.getUniformLocation(pr, 'r'), uT = gl.getUniformLocation(pr, 't'), uM = gl.getUniformLocation(pr, 'm');
+  var mx = 0.5, my = 0.5, tx = 0.5, ty = 0.5;
+  function size() {
+    var d = Math.min(window.devicePixelRatio || 1, 1.5), w = Math.max(2, Math.floor(innerWidth * d * 0.6)), hh = Math.max(2, Math.floor(innerHeight * d * 0.6));
+    cv.width = w; cv.height = hh; gl.viewport(0, 0, w, hh);
+  }
+  function draw(t) {
+    mx += (tx - mx) * 0.06; my += (ty - my) * 0.06;
+    gl.uniform2f(uR, cv.width, cv.height); gl.uniform1f(uT, t * 0.001); gl.uniform2f(uM, mx, my);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  addEventListener('resize', function () { size(); if (reduce) draw(0); });
+  addEventListener('pointermove', function (e) { tx = e.clientX / innerWidth; ty = 1 - e.clientY / innerHeight; }, { passive: true });
+  size();
+  if (reduce) draw(0); else (function loop(t) { draw(t); requestAnimationFrame(loop); })(0);
+})();
+</script>
+
+<script>
+(function () {
+  var h = React.createElement, useState = React.useState, useEffect = React.useEffect, useRef = React.useRef;
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+
+  var SKILLS = [
+    { n: 'Business communication', d: 'Writing clearly, speaking with confidence and keeping the message short enough to remember.', c: 0 },
+    { n: 'Marketing basics', d: 'Understanding what customers want, how brands position themselves and why one message lands while another does not.', c: 1 },
+    { n: 'Financial literacy', d: 'Reading simple statements, budgeting, and thinking about cost, price and return before making a call.', c: 2 },
+    { n: 'Leadership', d: 'Taking ownership, setting the pace for a group and making sure everyone knows what good looks like.', c: 0 },
+    { n: 'Teamwork', d: 'Listening first, sharing the work fairly and finishing what the group started.', c: 1 },
+    { n: 'Presentations', d: 'Turning a pile of notes into a story with a clear start, a point and a close.', c: 2 },
+    { n: 'Excel and Office', d: 'Word, Excel and PowerPoint for tidy reports, simple analysis and slides people can follow.', c: 0 },
+    { n: 'Research', d: 'Finding reliable sources, asking sharper questions and turning notes into insight.', c: 1 },
+    { n: 'Problem solving', d: 'Breaking a messy situation into parts, testing options and choosing a next step.', c: 2 },
+    { n: 'Time management', d: 'Planning the week, protecting focus time and meeting deadlines without last-minute panic.', c: 0 }
+  ];
+  var COLORS = ['#2540ff', '#ff5a4d', '#12b5d1'];
+  var ABOUT = 'I am a BBA fresher at Lovely Professional University who treats every class, group project and presentation as practice for the real thing. I am curious about how brands win customers, how money moves through a business and how good teams turn ideas into results. I learn by doing, I ask better questions every week, and I am building the habits that make a professional: preparation, clarity and follow-through.';
+
+  function Cursor() {
+    var r = useRef(null);
+    useEffect(function () {
+      if (reduce || !fine) return;
+      var el = r.current; el.hidden = false;
+      var x = 0, y = 0, tx = 0, ty = 0, raf = 0;
+      function mv(e) { tx = e.clientX; ty = e.clientY; el.classList.toggle('big', !!(e.target.closest && e.target.closest('a,button,label,input,textarea,canvas'))); }
+      function tick() { x += (tx - x) * 0.2; y += (ty - y) * 0.2; el.style.transform = 'translate(' + x + 'px,' + y + 'px)'; raf = requestAnimationFrame(tick); }
+      addEventListener('pointermove', mv); tick();
+      return function () { removeEventListener('pointermove', mv); cancelAnimationFrame(raf); };
+    }, []);
+    return h('div', { className: 'cursor', ref: r, hidden: true });
+  }
+
+  function Nav() {
+    return h('nav', null,
+      h('a', { className: 'brand', href: '#top' }, 'JPK', h('i', null, '.')),
+      h('div', { className: 'links' },
+        h('a', { href: '#about', className: 'opt' }, 'About'),
+        h('a', { href: '#skills' }, 'Skills'),
+        h('a', { href: '#growth', className: 'opt' }, 'Growth'),
+        h('a', { href: '#path' }, 'Path'),
+        h('a', { href: '#hello', className: 'go' }, 'Say hello')
+      )
+    );
+  }
+
+  function Hero() {
+    var st = useRef(null);
+    useEffect(function () {
+      if (reduce || !fine) return;
+      var el = st.current, raf = 0;
+      function on(e) {
+        var r = el.getBoundingClientRect();
+        var x = clamp((e.clientX - r.left) / r.width - 0.5, -0.6, 0.6), y = clamp((e.clientY - r.top) / r.height - 0.5, -0.6, 0.6);
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(function () {
+          el.style.setProperty('--rx', (-y * 8) + 'deg'); el.style.setProperty('--ry', (x * 10) + 'deg');
+          el.style.setProperty('--px', x); el.style.setProperty('--py', y);
+        });
+      }
+      addEventListener('pointermove', on);
+      return function () { removeEventListener('pointermove', on); cancelAnimationFrame(raf); };
+    }, []);
+    return h('header', { className: 'stage', id: 'top', ref: st },
+      h('h1', { className: 'names', 'aria-label': 'Jasik Preet Kaur' },
+        h('span', { className: 'l1' }, 'Jasik'), h('span', { className: 'l2' }, 'Preet'), h('span', { className: 'l3' }, 'Kaur')),
+      h('div', { className: 'pwrap' },
+        h('div', { className: 'disc' }), h('div', { className: 'ring' }),
+        h('img', { className: 'portrait', src: 'photo.webp', alt: 'Jasik Preet Kaur in a black blazer and glasses', width: 900, height: 1200 }),
+        h('div', { className: 'chip c1' }, h('b', null, 'BBA '), 'Business Administration'),
+        h('div', { className: 'chip c2' }, 'Lovely Professional University'),
+        h('div', { className: 'chip c3' }, h('b', null, 'Punjab '), 'Phagwara')
+      ),
+      h('div', { className: 'meta' },
+        h('p', { className: 'kick' }, 'Portfolio 2026'),
+        h('p', { className: 'lede' }, 'A BBA fresher curious about ', h('strong', null, 'brands, money and people'), ', and learning by building.'),
+        h('div', { className: 'btns' },
+          h('a', { className: 'btn solid', href: '#skills' }, 'Explore my skills'),
+          h('a', { className: 'btn', href: '#hello' }, 'Introduce yourself')
+        )
+      )
+    );
+  }
+
+  function Marquee() {
+    var words = ['Strategy', 'Marketing', 'Finance', 'Leadership', 'Communication', 'Curiosity', 'Teamwork', 'Growth'];
+    var row = words.concat(words).map(function (w, i) { return h('span', { key: i }, w); });
+    return h('div', { className: 'marq', 'aria-hidden': 'true' }, h('div', null, row, row));
+  }
+
+  function Reveal(props) {
+    var ref = useRef(null);
+    useEffect(function () {
+      var el = ref.current, sp = el.querySelectorAll('span');
+      function f() {
+        var r = el.getBoundingClientRect(), vh = innerHeight;
+        var p = reduce ? 1 : clamp((vh * 0.85 - r.top) / (r.height + vh * 0.2), 0, 1), k = p * sp.length * 1.1;
+        for (var i = 0; i < sp.length; i++) sp[i].classList.toggle('on', i < k);
+      }
+      f(); addEventListener('scroll', f, { passive: true }); addEventListener('resize', f);
+      return function () { removeEventListener('scroll', f); removeEventListener('resize', f); };
+    }, []);
+    return h('p', { className: 'reveal', ref: ref }, props.text.split(' ').map(function (w, i) { return h('span', { key: i }, w + ' '); }));
+  }
+
+  function About() {
+    return h('section', { id: 'about' },
+      h('div', { className: 'about' },
+        h('div', null, h('p', { className: 'kick' }, 'About'), h('h2', null, 'Fresh eyes. ', h('em', null, 'Serious'), ' intent.')),
+        h('div', null,
+          h(Reveal, { text: ABOUT }),
+          h('div', { className: 'facts' },
+            [['Programme', 'BBA'], ['University', 'Lovely Professional University'], ['Stage', 'Fresher, currently pursuing'], ['Interested in', 'Marketing, management, media']].map(function (f, i) {
+              return h('div', { className: 'glass fact', key: i }, h('small', null, f[0]), h('b', null, f[1]));
+            })
+          )
+        )
+      )
+    );
+  }
+
+  function Galaxy() {
+    var cvRef = useRef(null), selRef = useRef(0);
+    var s = useState(0), sel = s[0], setSel = s[1];
+    function choose(i) { selRef.current = i; setSel(i); }
+    useEffect(function () {
+      var cv = cvRef.current, ctx = cv.getContext('2d');
+      var W = 0, H = 0, dpr = 1, ay = 0.6, ax = -0.25, vy = reduce ? 0 : 0.0035, drag = false, lx = 0, ly = 0, moved = 0, hover = -1, visible = true, boxes = [], raf = 0;
+      var pts = SKILLS.map(function (_, i) {
+        var k = i + 0.5, phi = Math.acos(1 - 2 * k / SKILLS.length), th = Math.PI * (1 + Math.sqrt(5)) * k;
+        return { x: Math.cos(th) * Math.sin(phi), y: Math.cos(phi), z: Math.sin(th) * Math.sin(phi) };
+      });
+      function size() {
+        var r = cv.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height;
+        cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      function rot(x, y, z) {
+        var cY = Math.cos(ay), sY = Math.sin(ay), cX = Math.cos(ax), sX = Math.sin(ax);
+        var x1 = x * cY + z * sY, z1 = -x * sY + z * cY, y1 = y * cX - z1 * sX, z2 = y * sX + z1 * cX;
+        return { x: x1, y: y1, z: z2 };
+      }
+      function P(q, R) { var s = 1 / (1 - q.z * 0.22); return { sx: W / 2 + q.x * R * s, sy: H / 2 + q.y * R * s, z: q.z, s: s }; }
+      function pill(x, y, w, hh, r) {
+        ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + hh, r); ctx.arcTo(x + w, y + hh, x, y + hh, r);
+        ctx.arcTo(x, y + hh, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+      }
+      function ringPath(fn) {
+        ctx.beginPath();
+        for (var i = 0; i <= 72; i++) { var a = i / 72 * Math.PI * 2, q = P(rot.apply(null, fn(a)), Math.min(W, H) * 0.36); if (i) ctx.lineTo(q.sx, q.sy); else ctx.moveTo(q.sx, q.sy); }
+        ctx.stroke();
+      }
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        var R = Math.min(W, H) * 0.36;
+        ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(10,15,44,0.13)';
+        [-0.55, 0, 0.55].forEach(function (yy) { var rr = Math.sqrt(1 - yy * yy); ringPath(function (a) { return [Math.cos(a) * rr, yy, Math.sin(a) * rr]; }); });
+        [0, 1, 2].forEach(function (k) { var o = k * Math.PI / 3; ringPath(function (a) { return [Math.cos(a) * Math.cos(o), Math.sin(a), Math.cos(a) * Math.sin(o)]; }); });
+        var items = pts.map(function (p, i) { var q = rot(p.x, p.y, p.z), pr = P(q, R); pr.i = i; pr.q = q; return pr; });
+        for (var i = 0; i < items.length; i++) for (var j = i + 1; j < items.length; j++) {
+          var a = items[i].q, b = items[j].q, d = Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+          if (d < 1.15) { ctx.strokeStyle = 'rgba(37,64,255,' + (0.22 * (1 - d / 1.15) * (0.4 + 0.3 * (a.z + b.z + 2))) + ')'; ctx.beginPath(); ctx.moveTo(items[i].sx, items[i].sy); ctx.lineTo(items[j].sx, items[j].sy); ctx.stroke(); }
+        }
+        items.sort(function (a, b) { return a.z - b.z; });
+        boxes = [];
+        items.forEach(function (it) {
+          var sk = SKILLS[it.i], depth = (it.z + 1) / 2, fs = 11.5 + depth * 3.5;
+          ctx.font = '700 ' + fs + 'px Manrope, system-ui, sans-serif';
+          var tw = ctx.measureText(sk.n).width, w = tw + 30, hh = fs + 16, x = it.sx - w / 2, y = it.sy - hh / 2;
+          var on = it.i === selRef.current, hv = it.i === hover;
+          ctx.globalAlpha = 0.42 + 0.58 * depth;
+          ctx.shadowColor = 'rgba(10,15,44,0.18)'; ctx.shadowBlur = on || hv ? 18 : 8; ctx.shadowOffsetY = 4;
+          pill(x, y, w, hh, hh / 2); ctx.fillStyle = on ? '#0a0f2c' : '#ffffff'; ctx.fill();
+          ctx.shadowColor = 'transparent'; ctx.lineWidth = hv || on ? 2 : 1; ctx.strokeStyle = on ? '#0a0f2c' : (hv ? COLORS[sk.c] : 'rgba(10,15,44,0.14)'); ctx.stroke();
+          ctx.beginPath(); ctx.arc(x + 12, it.sy, 3.5, 0, Math.PI * 2); ctx.fillStyle = COLORS[sk.c]; ctx.fill();
+          ctx.fillStyle = on ? '#ffffff' : '#0a0f2c'; ctx.textBaseline = 'middle'; ctx.fillText(sk.n, x + 21, it.sy + 0.5);
+          ctx.globalAlpha = 1;
+          boxes.push({ i: it.i, x: x, y: y, w: w, h: hh });
+        });
+      }
+      function loop() {
+        if (visible) {
+          if (!drag) { ay += vy; vy += ((reduce ? 0 : 0.0035) - vy) * 0.03; }
+          draw();
+        }
+        raf = requestAnimationFrame(loop);
+      }
+      function hit(e) {
+        var r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, f = -1;
+        for (var k = boxes.length - 1; k >= 0; k--) { var b = boxes[k]; if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { f = b.i; break; } }
+        return f;
+      }
+      function down(e) { drag = true; moved = 0; lx = e.clientX; ly = e.clientY; try { cv.setPointerCapture(e.pointerId); } catch (x) {} }
+      function move(e) {
+        if (drag) {
+          var dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY; moved += Math.abs(dx) + Math.abs(dy);
+          ay += dx * 0.008; vy = dx * 0.0008; ax = clamp(ax + dy * 0.006, -1.1, 1.1);
+        } else { hover = hit(e); cv.style.cursor = hover >= 0 ? 'pointer' : 'grab'; }
+        if (reduce) draw();
+      }
+      function up(e) { if (drag && moved < 6) { var i = hit(e); if (i >= 0) choose(i); } drag = false; if (reduce) draw(); }
+      cv.addEventListener('pointerdown', down); cv.addEventListener('pointermove', move); cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', function () { drag = false; });
+      cv.addEventListener('pointerleave', function () { hover = -1; });
+      var ro = new ResizeObserver(function () { size(); draw(); }); ro.observe(cv);
+      var io = new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }); io.observe(cv);
+      size(); draw(); cv.__redraw = draw; loop();
+      return function () { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); };
+    }, []);
+    useEffect(function () { var cv = cvRef.current; if (cv && cv.__redraw && reduce) cv.__redraw(); }, [sel]);
+    var cur = SKILLS[sel];
+    return h('section', { id: 'skills' },
+      h('p', { className: 'kick' }, 'Skills'),
+      h('h2', null, 'A galaxy of ', h('em', null, 'strengths'), '.'),
+      h('div', { className: 'gal' },
+        h('div', { className: 'glass gcan' }, h('canvas', { ref: cvRef, 'aria-label': 'Interactive 3D skill galaxy. Drag to rotate, click a skill to read about it.' }), h('span', { className: 'hint' }, 'Drag to spin · tap a skill')),
+        h('div', { className: 'glass detail' },
+          h('div', null, h('span', { className: 'tag' }, 'Selected skill'), h('h3', null, cur.n), h('p', null, cur.d)),
+          h('div', { className: 'pills', role: 'group', 'aria-label': 'Choose a skill' },
+            SKILLS.map(function (k, i) { return h('button', { key: i, type: 'button', 'aria-pressed': i === sel ? 'true' : 'false', onClick: function () { choose(i); } }, k.n); }))
+        )
+      )
+    );
+  }
+
+  function Growth() {
+    var wrap = useRef(null), cv = useRef(null);
+    useEffect(function () {
+      if (!window.THREE) return;
+      var renderer; try { renderer = new THREE.WebGLRenderer({ canvas: cv.current, antialias: true, alpha: true }); } catch (e) { return; }
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+      var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(36, 1, 0.1, 100), group = new THREE.Group(); scene.add(group);
+      var COLS = 34, ROWS = 16, N = COLS * ROWS;
+      var geo = new THREE.BoxGeometry(0.76, 1, 0.76); geo.translate(0, 0.5, 0);
+      var mesh = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ roughness: 0.38, metalness: 0.08 }), N); group.add(mesh);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+      var dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(-6, 12, 8); scene.add(dl);
+      var c1 = new THREE.Color(0x22d1ee), c2 = new THREE.Color(0x2540ff), c3 = new THREE.Color(0xff5a4d), tmp = new THREE.Color();
+      for (var gx = 0; gx < COLS; gx++) for (var gz = 0; gz < ROWS; gz++) {
+        var t = gx / (COLS - 1);
+        if (t < 0.6) tmp.copy(c1).lerp(c2, t / 0.6); else tmp.copy(c2).lerp(c3, (t - 0.6) / 0.4);
+        mesh.setColorAt(gx * ROWS + gz, tmp);
+      }
+      mesh.instanceColor.needsUpdate = true;
+      var dummy = new THREE.Object3D(), mgx = -50, mgz = -50, nx = 0, visible = true, raf = 0, grow = reduce ? 1 : 0, gtarget = 1;
+      function update(time) {
+        for (var gx = 0; gx < COLS; gx++) for (var gz = 0; gz < ROWS; gz++) {
+          var x = gx / (COLS - 1);
+          var base = 0.12 + x * x * 5.4 * grow;
+          var wave = reduce ? 0 : (Math.sin(gx * 0.5 + time * 1.1 + gz * 0.35) * 0.22 + Math.cos(gz * 0.7 - time * 0.9) * 0.14) * (0.4 + x);
+          var dd = (gx - mgx) * (gx - mgx) + (gz - mgz) * (gz - mgz), bump = Math.exp(-dd / 9) * 2.4 * grow;
+          dummy.position.set((gx - COLS / 2) * 0.9, 0, (gz - ROWS / 2) * 0.9);
+          dummy.scale.set(1, Math.max(0.08, base + wave + bump), 1); dummy.updateMatrix();
+          mesh.setMatrixAt(gx * ROWS + gz, dummy.matrix);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+      }
+      function render(time) {
+        var r = wrap.current.getBoundingClientRect(), vh = innerHeight;
+        gtarget = reduce ? 1 : clamp((vh * 0.95 - r.top) / (vh * 0.75), 0, 1);
+        grow += (gtarget - grow) * 0.08;
+        cam.position.set(nx * 5, 10.5, 17); cam.lookAt(0, 1.6, 0);
+        group.rotation.y = -0.38 + nx * 0.12;
+        update(time * 0.001); renderer.render(scene, cam);
+      }
+      function size() { var r = wrap.current.getBoundingClientRect(); renderer.setSize(r.width, r.height, false); cam.aspect = r.width / r.height; cam.fov = r.width < 560 ? 52 : 36; cam.updateProjectionMatrix(); render(0); }
+      function pm(e) {
+        var r = wrap.current.getBoundingClientRect(); var u = (e.clientX - r.left) / r.width, v = (e.clientY - r.top) / r.height;
+        nx = (u - 0.5) * 2; mgx = u * COLS; mgz = (1 - v) * ROWS * 1.1; if (reduce) render(0);
+      }
+      function leave() { mgx = -50; mgz = -50; nx = 0; if (reduce) render(0); }
+      wrap.current.addEventListener('pointermove', pm); wrap.current.addEventListener('pointerleave', leave);
+      var ro = new ResizeObserver(size); ro.observe(wrap.current);
+      var io = new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }); io.observe(wrap.current);
+      function loop(t) { if (visible) render(t); raf = requestAnimationFrame(loop); }
+      size(); if (!reduce) loop(0);
+      return function () { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); renderer.dispose(); };
+    }, []);
+    return h('section', { id: 'growth' },
+      h('p', { className: 'kick' }, 'Growth'),
+      h('h2', null, 'Small habits. ', h('em', null, 'Compounding'), ' results.'),
+      h('div', { className: 'growth', ref: wrap },
+        h('canvas', { ref: cv, 'aria-label': 'Animated 3D bar field that rises from left to right, a picture of steady growth.' }),
+        h('p', { className: 'gcap' }, 'Every bar is a habit. Move your cursor to lift them.'),
+        h('span', { className: 'glab gl1' }, 'Year one'), h('span', { className: 'glab gl2' }, 'The goal')
+      )
+    );
+  }
+
+  function Path() {
+    var ref = useRef(null);
+    useEffect(function () {
+      var el = ref.current;
+      function f() { var r = el.getBoundingClientRect(); el.style.setProperty('--jp', clamp((innerHeight * 0.7 - r.top) / r.height, 0, 1)); }
+      f(); addEventListener('scroll', f, { passive: true }); addEventListener('resize', f);
+      return function () { removeEventListener('scroll', f); removeEventListener('resize', f); };
+    }, []);
+    var steps = [
+      ['NOW', 'BBA at Lovely Professional University', 'Building a base in management, marketing, finance and communication in Phagwara, Punjab.', 'now'],
+      ['NEXT', 'Societies, certifications and live projects', 'Adding hands-on experience alongside the classroom through campus activities and short courses.', ''],
+      ['GOAL', 'An internship, then a career in business', 'Contributing to a real team in marketing or management, and growing into a role with responsibility.', '']
+    ];
+    return h('section', { id: 'path' },
+      h('p', { className: 'kick' }, 'Path'),
+      h('h2', null, 'Where I am, and ', h('em', null, 'where I am headed'), '.'),
+      h('div', { className: 'path', ref: ref }, steps.map(function (s, i) {
+        return h('div', { className: 'glass stop ' + s[3], key: i }, h('small', null, s[0]), h('h3', null, s[1]), h('p', null, s[2]));
+      }))
+    );
+  }
+
+  function Contact() {
+    var st = useState('loading'), phase = st[0], setPhase = st[1];
+    var fs = useState({ name: '', org: '', email: '', msg: '' }), f = fs[0], setF = fs[1];
+    var es = useState(''), err = es[0], setErr = es[1];
+    var os = useState(false), owner = os[0], setOwner = os[1];
+    var is = useState([]), inbox = is[0], setInbox = is[1];
+    var ref = useRef({ db: null, id: null });
+    useEffect(function () {
+      var off = function () {}, dead = false;
+      (async function () {
+        try {
+          var c = window.claude;
+          if (!c || !c.use) { setPhase('closed'); return; }
+          var db = await c.use('db'), user = await c.use('user');
+          if (dead) return;
+          if (!db || !user) { setPhase('closed'); return; }
+          var id = await user.id();
+          if (!id) { setPhase('closed'); return; }
+          ref.current = { db: db, id: id };
+          if (user.isOwner()) {
+            setOwner(true);
+            off = db.collection('inbox').onSnapshot(function (snap) {
+              var rows = [];
+              snap.docs.forEach(function (d) { var m = (d.data() || {}).messages || []; m.forEach(function (x) { rows.push(x); }); });
+              rows.sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+              setInbox(rows);
+            }, function () {});
+          }
+          setPhase('open');
+        } catch (e) { if (!dead) setPhase('closed'); }
+      })();
+      return function () { dead = true; off(); };
+    }, []);
+    function upd(k) { return function (e) { var v = e.target.value; setF(function (o) { var n = Object.assign({}, o); n[k] = v; return n; }); }; }
+    async function submit(e) {
+      e.preventDefault(); setErr('');
+      if (f.name.trim().length < 2 || f.msg.trim().length < 8 || !/^\S+@\S+\.\S+$/.test(f.email.trim())) { setErr('Please add your name, a valid email so she can reply, and a short message.'); return; }
+      setPhase('sending');
+      try {
+        var doc = ref.current.db.doc('inbox/' + ref.current.id), snap = await doc.get(), old = (snap.exists && (snap.data() || {}).messages) || [];
+        var next = old.concat([{ name: f.name.trim(), org: f.org.trim(), email: f.email.trim(), msg: f.msg.trim(), at: Date.now() }]).slice(-20);
+        await doc.set({ messages: next });
+        setPhase('sent'); setF({ name: '', org: '', email: '', msg: '' });
+      } catch (x) { setPhase('open'); setErr('This page could not take your message. Messages are open to people who were invited to view it.'); }
+    }
+    var lockIcon = h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': 'true' }, h('rect', { x: 4, y: 11, width: 16, height: 10, rx: 2 }), h('path', { d: 'M8 11V8a4 4 0 0 1 8 0v3' }));
+    var right;
+    if (phase === 'loading') right = h('div', { className: 'note' }, 'Opening the private message box…');
+    else if (phase === 'closed') right = h('div', { className: 'note' }, 'Direct messages are available to people invited to this page. To reach Jasik, please ask the person who shared this portfolio with you for an introduction.');
+    else if (phase === 'sent') right = h('div', { className: 'note ok', role: 'status' }, 'Message delivered privately. Jasik will reply to the email you gave.');
+    else right = h('form', { onSubmit: submit, noValidate: true },
+      h('div', { className: 'two' },
+        h('label', { htmlFor: 'f-name' }, 'Your name', h('input', { id: 'f-name', value: f.name, onChange: upd('name'), autoComplete: 'name', required: true })),
+        h('label', { htmlFor: 'f-org' }, 'Organisation (optional)', h('input', { id: 'f-org', value: f.org, onChange: upd('org'), autoComplete: 'organization' }))),
+      h('label', { htmlFor: 'f-email' }, 'Your email, so she can reply', h('input', { id: 'f-email', type: 'email', value: f.email, onChange: upd('email'), autoComplete: 'email', required: true })),
+      h('label', { htmlFor: 'f-msg' }, 'Message', h('textarea', { id: 'f-msg', value: f.msg, onChange: upd('msg'), required: true })),
+      err ? h('div', { className: 'note bad', role: 'alert' }, err) : null,
+      h('div', null, h('button', { className: 'btn solid', type: 'submit', disabled: phase === 'sending' }, phase === 'sending' ? 'Sending…' : 'Send privately'))
+    );
+    return h('section', { id: 'hello' },
+      h('div', { className: 'glass hello' },
+        h('div', null,
+          h('p', { className: 'kick' }, 'Say hello'),
+          h('h2', null, 'Introductions, ', h('em', null, 'on request'), '.'),
+          h('p', null, 'Jasik keeps her phone number and email private. Leave a note here and it goes straight to her inbox, and she will reply herself.'),
+          h('span', { className: 'lock' }, lockIcon, 'Contact details are never shown on this page')
+        ),
+        h('div', null, right)
+      ),
+      owner ? h('div', { className: 'glass inbox' },
+        h('h3', null, 'Private inbox'),
+        h('small', { style: { color: 'var(--ink2)' } }, 'Only you can see this section.'),
+        inbox.length ? inbox.map(function (m, i) {
+          return h('div', { className: 'msg', key: i }, h('small', null, m.name + (m.org ? ' · ' + m.org : '') + ' · ' + m.email + ' · ' + new Date(m.at).toLocaleString()), h('div', null, m.msg));
+        }) : h('div', { className: 'note' }, 'No messages yet.')
+      ) : null
+    );
+  }
+
+  function App() {
+    useEffect(function () {
+      function f() { var max = document.documentElement.scrollHeight - innerHeight; document.documentElement.style.setProperty('--sp', (max > 0 ? scrollY / max * 100 : 0) + '%'); }
+      f(); addEventListener('scroll', f, { passive: true }); addEventListener('resize', f);
+      return function () { removeEventListener('scroll', f); removeEventListener('resize', f); };
+    }, []);
+    return h(React.Fragment, null,
+      h('div', { className: 'bar' }), h(Cursor),
+      h('div', { className: 'wrap' },
+        h(Nav), h(Hero), h(Marquee), h(About), h(Galaxy), h(Growth), h(Path), h(Contact),
+        h('footer', null, h('span', null, 'Jasik Preet Kaur · BBA · Lovely Professional University'), h('span', null, 'Portfolio 2026'))
+      )
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+})();
+</script>
+
+</body></html>
