@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: jasik-portfolio
+    env: static
+    rootDir: portfolio-app
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
