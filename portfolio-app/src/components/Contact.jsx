@@ -1,9 +1,29 @@
 import { useState } from 'react'
 
+/**
+ * Recipient email for Jasik Preet Kaur.
+ * You or Jasik can update this address anytime:
+ */
+export const JASIK_EMAIL = 'hraj48147@gmail.com'
+
 const LockIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <rect x={4} y={11} width={16} height={10} rx={2} />
     <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+  </svg>
+)
+
+const MailIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 16, height: 16, marginRight: 6 }}>
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+    <polyline points="22,6 12,13 2,6" />
+  </svg>
+)
+
+const CopyIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ width: 16, height: 16, marginRight: 6 }}>
+    <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
   </svg>
 )
 
@@ -16,16 +36,17 @@ function validate(f) {
 }
 
 export default function Contact() {
-  const [phase, setPhase] = useState('open')  // 'open' | 'sending' | 'sent'
+  const [phase, setPhase] = useState('open') // 'open' | 'sending' | 'sent'
   const [f, setF] = useState({ name: '', org: '', email: '', msg: '' })
   const [errors, setErrors] = useState({})
   const [touched, setTouched] = useState({})
+  const [mailtoUrl, setMailtoUrl] = useState('')
+  const [copied, setCopied] = useState(false)
 
   function upd(k) {
     return e => {
       const val = e.target.value
       setF(o => ({ ...o, [k]: val }))
-      // Clear per-field error as user types
       if (errors[k]) setErrors(o => ({ ...o, [k]: undefined }))
     }
   }
@@ -33,15 +54,21 @@ export default function Contact() {
   function blur(k) {
     return () => {
       setTouched(o => ({ ...o, [k]: true }))
-      // Validate just this field on blur
       const errs = validate({ ...f })
       setErrors(o => ({ ...o, [k]: errs[k] }))
     }
   }
 
+  function buildMailto(data) {
+    const subject = encodeURIComponent(`Portfolio Inquiry from ${data.name}${data.org ? ' (' + data.org + ')' : ''}`)
+    const body = encodeURIComponent(
+      `Hi Jasik,\n\n${data.msg}\n\n---\nSender Details:\nName: ${data.name}\nEmail: ${data.email}${data.org ? '\nOrganisation: ' + data.org : ''}`
+    )
+    return `mailto:${JASIK_EMAIL}?subject=${subject}&body=${body}`
+  }
+
   async function submit(e) {
     e.preventDefault()
-    // Mark all fields touched so errors show
     setTouched({ name: true, email: true, msg: true })
     const errs = validate(f)
     if (Object.keys(errs).length > 0) {
@@ -50,12 +77,24 @@ export default function Contact() {
     }
 
     setPhase('sending')
-    // Simulate async send (swap with real endpoint if needed)
-    await new Promise(r => setTimeout(r, 1000))
+    const url = buildMailto(f)
+    setMailtoUrl(url)
+
+    // Trigger user's mail client (opens Gmail / Outlook / Apple Mail)
+    window.location.href = url
+
+    await new Promise(r => setTimeout(r, 600))
     setPhase('sent')
     setF({ name: '', org: '', email: '', msg: '' })
     setErrors({})
     setTouched({})
+  }
+
+  function copyEmail() {
+    navigator.clipboard.writeText(JASIK_EMAIL).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    })
   }
 
   if (phase === 'sent') {
@@ -64,19 +103,42 @@ export default function Contact() {
         <div className="glass hello" style={{ alignItems: 'center' }}>
           <div>
             <p className="kick">Say hello</p>
-            <h2>Introductions, <em>welcome</em>.</h2>
-            <p>Jasik keeps her contact details private. Leave a note here and she will be in touch.</p>
-            <span className="lock"><LockIcon />Contact details are never shown on this page</span>
+            <h2>Message <em>prepared</em>.</h2>
+            <p>Your email app has been opened with the message ready to send directly to Jasik.</p>
+            <span className="lock"><LockIcon />Direct delivery to Jasik's inbox</span>
           </div>
-          <div className="note ok" role="status" style={{ fontSize: '1rem', padding: '24px' }}>
-            ✓ Message received — Jasik will be in touch soon. Thank you!
-            <br />
+          <div className="note ok" role="status" style={{ fontSize: '0.95rem', padding: '24px' }}>
+            <p style={{ margin: '0 0 12px', fontWeight: 600, color: '#1fa97a' }}>
+              ✓ Email app opened with your pre-filled message!
+            </p>
+            <p style={{ margin: '0 0 16px', fontSize: '0.88rem', opacity: 0.9 }}>
+              Hit <strong>Send</strong> in your mail app to deliver it directly to Jasik. If it didn't open automatically, use either option below:
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 16 }}>
+              {mailtoUrl && (
+                <a
+                  href={mailtoUrl}
+                  className="btn solid"
+                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                >
+                  <MailIcon /> Open Mail App Again
+                </a>
+              )}
+              <button
+                type="button"
+                className="btn"
+                onClick={copyEmail}
+                style={{ display: 'inline-flex', alignItems: 'center' }}
+              >
+                <CopyIcon /> {copied ? 'Copied Jasik\'s Email!' : 'Copy Jasik\'s Email'}
+              </button>
+            </div>
             <button
               className="btn"
-              style={{ marginTop: 18 }}
+              style={{ fontSize: '0.82rem', padding: '8px 14px' }}
               onClick={() => setPhase('open')}
             >
-              Send another message
+              ← Send another message
             </button>
           </div>
         </div>
@@ -92,11 +154,11 @@ export default function Contact() {
           <p className="kick">Say hello</p>
           <h2>Introductions, <em>welcome</em>.</h2>
           <p>
-            Jasik keeps her contact details private. Leave a note here and she will be in touch.
+            Leave a note here and it will open directly in your mail app addressed to Jasik.
           </p>
           <span className="lock">
             <LockIcon />
-            Contact details are never shown on this page
+            Direct email delivery to Jasik's inbox
           </span>
         </div>
 
@@ -177,7 +239,7 @@ export default function Contact() {
               type="submit"
               disabled={phase === 'sending'}
             >
-              {phase === 'sending' ? 'Sending…' : 'Send message'}
+              {phase === 'sending' ? 'Opening email…' : 'Send message via Email'}
             </button>
           </div>
         </form>
